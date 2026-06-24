@@ -187,8 +187,8 @@ async def run_setup(cfg: Config, *, force: bool = False) -> None:
 
     # Workflow name
     _blank()
-    _dim("The default workflow name is 'shift_cli'.")
-    wf = _ask("Workflow name  (Enter = shift_cli)  >")
+    _dim("The default workflow name is 'autopilot'.")
+    wf = _ask("Workflow name  (Enter = autopilot)  >")
     if wf:
         cfg.set("workflow_name", wf.strip())
 

@@ -96,8 +96,8 @@ class Config:
 
     @property
     def workflow_name(self) -> str:
-        """Name of the Foundry workflow (default: shift_cli)."""
-        return self._data.get("workflow_name", "shift_cli")
+        """Name of the Foundry workflow (default: autopilot)."""
+        return self._data.get("workflow_name", "autopilot")
 
     @property
     def workflow_version(self) -> str:

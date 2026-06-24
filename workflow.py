@@ -17,7 +17,7 @@ project_client = AIProjectClient(
 with project_client:
 
     workflow = {
-        "name": "shift_cli",
+        "name": "autopilot",
         "version": "1",
     }
     
