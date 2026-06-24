@@ -8,36 +8,24 @@ AutoPilot is a production-grade, multi-agent terminal automation system built on
 
 AutoPilot implements a sequential, context-accumulating multi-agent pipeline composed of three specialized reasoning agents. The system utilizes Microsoft Azure AI Foundry's model orchestration layer, stateful agent runtime, and Azure AI Search knowledge base grounding to deliver highly precise and secure terminal execution workflows.
 
-```
-                         [ User Query / CLI ]
-                                  │
-                                  ▼
-                    [ SQLite Persistent Memory Load ]
-                                  │
-                                  ▼
-                   [ Human-in-the-Loop Clarification ]
-                                  │
-                                  ▼
-                     [ Azure AI Foundry Workflow ]
-                                  │
-         ┌────────────────────────┼────────────────────────┐
-         ▼                        ▼                        ▼
-    Planner Agent         Researcher Agent           Writer Agent
-   (Decomposition)     (Azure AI Search Grounding)  (Execution Plan)
-         │                        │                        │
-         └────────────────────────┼────────────────────────┘
-                                  │
-                                  ▼
-                    [ Command Risk Guardrails ]
-                                  │
-                                  ▼
-                   [ User Execution Confirmation ]
-                                  │
-                                  ▼
-                     [ Safe Shell Execution ]
-                                  │
-                                  ▼
-                    [ SQLite Persistent Memory Sync ]
+```mermaid
+graph TD
+    A[User Input] --> B(Interactive CLI / REPL)
+    B --> C{HITL Clarifying Gate}
+    C -->|Ambiguous| A
+    C -->|Clear| D[Azure AI Foundry Pipeline]
+    subgraph Azure AI Foundry
+        D --> E[Planner Agent]
+        E -->|Decomposed Steps JSON| F[Researcher Agent]
+        F -->|Grounded Commands JSON| G[Writer Agent]
+        F -.->|Retrieve Ground Truth| H[(Azure AI Search Index)]
+    end
+    G -->|Plan JSON| I[Execution Engine]
+    I -->|Risk Assessed| J{Risk Level}
+    J -->|Safe / Moderate| K[User Confirmation Gate]
+    J -->|Dangerous| L[Blocked by Default]
+    K -->|Approve| M[Local Shell Execution]
+    M --> N[(SQLite memory/history.db)]
 ```
 
 ---
@@ -48,10 +36,13 @@ AutoPilot implements a sequential, context-accumulating multi-agent pipeline com
 *   **Azure AI Foundry Integration**: Uses the Azure AI SDK (`AIProjectClient`) to run agent sessions and coordinate LLM runs.
 *   **Azure AI Search Grounding**: Integrates the project's Azure AI Search knowledge base with the Researcher agent to fetch accurate, authentic CLI syntax.
 *   **Risk-Aware Command Guardrails**: Assesses command risk (`safe`, `moderate`, `dangerous`) and automatically blocks dangerous/destructive actions (e.g., recursive deletes, formatting) by default.
+*   **Dockerized Execution Environment**: Pre-configured Docker setup for containerized deployment, ensuring consistency across environments.
+*   **Automated CI/CD Pipelines**: Integrated GitHub Actions workflows for Python package linting (Ruff), testing (Pytest), and automated GHCR container builds.
 *   **Interactive REPL & CLI**: A sleek, user-friendly interactive console utilizing Rich-formatted tables, colored output, and spinners.
 *   **Human-in-the-Loop (HITL) Clarification**: Proactively asks clarifying questions when tasks are ambiguous before generating the final plan.
-*   **SQLite Persistent Memory & History**: Logs execution history, task metadata, and results in a local SQLite store (`history.db`).
+*   **SQLite Persistent Memory & History**: Logs execution history, task metadata, duration, stdout/stderr logs, and results in a local SQLite store (`history.db`).
 *   **OS and Shell Auto-Detection**: Auto-detects whether the user is on Windows (PowerShell/CMD), macOS (zsh), or Linux (bash) and adapts the commands accordingly.
+*   **Custom Configuration CLI**: Direct inline subcommands (`setup`, `history`) for quick workspace configuration and history database retrieval.
 
 ---
 
@@ -71,6 +62,45 @@ Detailed design specs, execution logs, and guides are organized within the repos
 
 *   **[Agent Prompts Reference](file:///c:/Users/RAJ/Desktop/AutoPilot/context.md)**: Breakdown of instructions, roles, and JSON schema structures for Planner, Researcher, and Writer agents.
 *   **[Problem Statement](file:///c:/Users/RAJ/Desktop/AutoPilot/problem_stmt.md)**: Hackathon specification, objectives, pain points, and target user demographics.
+*   **[Docker Configuration Guide](file:///c:/Users/RAJ/Desktop/AutoPilot/DOCKER.md)**: Container commands, volume mappings, and Docker execution instructions.
+
+---
+
+## Repository Structure
+
+```text
+AutoPilot/
+├── .dockerignore               # Docker build ignore exclusions
+├── Dockerfile                  # Production container definition
+├── DOCKER.md                   # Docker usage and configuration guide
+├── README.md                   # System documentation & quickstart
+├── pyproject.toml              # PyPI package and dependency configuration
+├── run_autopilot.py            # Local development execution entrypoint
+│
+├── .github/                    # CI/CD Workflows
+│   └── workflows/
+│       ├── ci.yml              # Python lint and test workflow
+│       └── docker.yml          # Container image build & push workflow
+│
+├── autopilot/                  # Core Python package
+│   ├── cli.py                  # Interactive REPL CLI & Rich UI
+│   ├── config.py               # OS/Shell detection and Foundry config
+│   ├── executor.py             # Command safety verification & run engine
+│   │
+│   ├── agents/                 # Cloud Agent orchestration
+│   │   ├── prompts.py          # System instructions for LLM personas
+│   │   └── pipeline.py         # Foundry client wrapper
+│   │
+│   ├── hitl/                   # Human-in-the-loop validation
+│   │   └── questioner.py       # Clarifying question handler
+│   │
+│   └── memory/                 # SQLite command persistence
+│       └── store.py            # Database tables schema and connection
+│
+├── context.md                  # System prompt reference copies
+├── problem_stmt.md             # Hackathon challenge description
+└── workflow.py                 # Azure SDK orchestration reference
+```
 
 ---
 
