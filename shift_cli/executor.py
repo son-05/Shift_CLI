@@ -1,5 +1,5 @@
 """
-autopilot/executor.py — Safe command executor
+shift_cli/executor.py — Safe command executor
 ==============================================
 
 Takes the Writer Agent's JSON execution plan and runs commands
@@ -17,7 +17,6 @@ import platform
 import subprocess
 import time
 from typing import Any
-
 
 # Commands that should NEVER be auto-executed
 DANGEROUS_PATTERNS = [
@@ -51,7 +50,7 @@ def execute_plan(writer_json: dict[str, Any], shell: str | None = None) -> list[
         List of result dicts with command, success, output, error, time.
     """
     if shell is None:
-        from autopilot.config import detect_shell
+        from shift_cli.config import detect_shell
         shell = detect_shell()
 
     commands = writer_json.get("final_commands", [])
@@ -93,7 +92,7 @@ def execute_plan(writer_json: dict[str, Any], shell: str | None = None) -> list[
         # Check for directory changes
         cmd_stripped = cmd.strip()
         cmd_parts = cmd_stripped.split(None, 1)
-        
+
         is_cd = False
         is_pushd = False
         is_popd = False
@@ -119,8 +118,8 @@ def execute_plan(writer_json: dict[str, Any], shell: str | None = None) -> list[
         proposed_stack = list(cwd_stack)
 
         if is_cd or is_pushd or is_popd:
-            from pathlib import Path
             import os
+            from pathlib import Path
             base_path = Path(current_cwd) if current_cwd else Path.cwd()
 
             if is_cd:

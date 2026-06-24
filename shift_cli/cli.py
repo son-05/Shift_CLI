@@ -1,10 +1,10 @@
 """
-autopilot/cli.py — AutoPilot command-line interface
+shift_cli/cli.py — Shift_CLI command-line interface
 =====================================================
 
-Entry point: autopilot = "autopilot.cli:main"
+Entry point: shift_cli = "shift_cli.cli:main"
 
-After  pip install autopilot-cli  →  run  autopilot
+After  pip install shift-cli  →  run  shift_cli
 
 Features
 --------
@@ -13,19 +13,16 @@ Features
   - Human-in-the-loop clarifying questions before execution
   - 3-agent pipeline via Azure AI Foundry (Planner → Researcher → Writer)
   - Risk-aware command execution (safe/moderate/dangerous)
-  - Persistent command history (~/.autopilot/history.db)
+  - Persistent command history (~/.shift_cli/history.db)
   - Interactive REPL with Rich terminal UI
 """
 
 from __future__ import annotations
 
-import asyncio
 import argparse
-import json
-import os
+import asyncio
 import platform
 import sys
-import time
 from datetime import datetime
 from pathlib import Path
 
@@ -43,22 +40,25 @@ if str(_ROOT) not in sys.path:
 
 # ── Load .env ─────────────────────────────────────────────────────────────────
 from dotenv import load_dotenv
+
 load_dotenv(Path.cwd() / ".env", override=False)
-load_dotenv(Path.home() / ".autopilot" / ".env", override=False)
+load_dotenv(Path.home() / ".shift_cli" / ".env", override=False)
 
 # ── Silence noisy loggers ─────────────────────────────────────────────────────
 import warnings
+
 warnings.filterwarnings("ignore")
 import logging
+
 for _log in ("httpx", "azure", "openai", "urllib3"):
     logging.getLogger(_log).setLevel(logging.ERROR)
 
 # ── Rich ──────────────────────────────────────────────────────────────────────
+from rich import box
 from rich.console import Console
 from rich.panel import Panel
-from rich.table import Table
 from rich.rule import Rule
-from rich import box
+from rich.table import Table
 
 console = Console(highlight=False)
 
@@ -77,9 +77,8 @@ C_MOD    = "yellow3"
 C_DANGER = "red3"
 
 # ── Imports ───────────────────────────────────────────────────────────────────
-from autopilot.config import Config, detect_os, detect_shell
-from autopilot.memory.store import MemoryStore
-
+from shift_cli.config import Config, detect_os, detect_shell
+from shift_cli.memory.store import MemoryStore
 
 # ── UI helpers ────────────────────────────────────────────────────────────────
 
@@ -157,14 +156,14 @@ def _banner() -> None:
 
 async def run_setup(cfg: Config, *, force: bool = False) -> None:
     """
-    Interactive setup wizard. Runs on first install or `autopilot setup`.
-    Saves endpoint and OS info to ~/.autopilot/config.json.
+    Interactive setup wizard. Runs on first install or `shift_cli setup`.
+    Saves endpoint and OS info to ~/.shift_cli/config.json.
     """
     _rule("Setup")
     _blank()
 
     if not force and cfg.is_configured():
-        _p(f"[{C_LABEL}]AutoPilot is already configured.[/]")
+        _p(f"[{C_LABEL}]Shift_CLI is already configured.[/]")
         _dim(f"Endpoint : {cfg.endpoint[:60]}...")
         _dim(f"OS       : {cfg.os_name}")
         _blank()
@@ -173,7 +172,7 @@ async def run_setup(cfg: Config, *, force: bool = False) -> None:
             return
 
     _blank()
-    _p(f"[{C_LABEL}]AutoPilot uses Azure AI Foundry to run its 3-agent pipeline.[/]")
+    _p(f"[{C_LABEL}]Shift_CLI uses Azure AI Foundry to run its 3-agent pipeline.[/]")
     _dim("You'll need your Azure AI Foundry project endpoint.")
     _dim("Get it from: Azure AI Foundry portal → your project → Overview")
     _blank()
@@ -183,13 +182,13 @@ async def run_setup(cfg: Config, *, force: bool = False) -> None:
     if ep:
         cfg.set("endpoint", ep.strip())
     else:
-        _err("No endpoint provided. You can set it later with 'autopilot setup'.")
+        _err("No endpoint provided. You can set it later with 'shift_cli setup'.")
         return
 
     # Workflow name
     _blank()
-    _dim("The default workflow name is 'autopilot'.")
-    wf = _ask("Workflow name  (Enter = autopilot)  >")
+    _dim("The default workflow name is 'shift_cli'.")
+    wf = _ask("Workflow name  (Enter = shift_cli)  >")
     if wf:
         cfg.set("workflow_name", wf.strip())
 
@@ -247,7 +246,7 @@ async def _run_hitl(task: str, memory: MemoryStore, cfg: Config) -> str:
         f"  [{C_DIM}]Preparing questions...[/]",
         spinner="line", spinner_style=C_DIM,
     ):
-        from autopilot.hitl.questioner import generate_questions
+        from shift_cli.hitl.questioner import generate_questions
         questions = await generate_questions(
             task, os_context=cfg.os_name,
             memory_context=memory_ctx,
@@ -354,7 +353,7 @@ async def _execute_with_confirmation(
     writer_json: dict, memory: MemoryStore, cfg: Config, task: str,
 ) -> None:
     """Ask for confirmation then execute commands."""
-    from autopilot.executor import execute_plan, is_dangerous
+    from shift_cli.executor import execute_plan
 
     commands = writer_json.get("final_commands", [])
     requires_confirm = writer_json.get("requires_confirmation", False)
@@ -402,9 +401,10 @@ async def _execute_step_by_step(
     writer_json: dict, memory: MemoryStore, cfg: Config, task: str,
 ) -> None:
     """Execute commands one at a time with per-step confirmation."""
-    from autopilot.executor import execute_plan, is_dangerous
     import subprocess
     import time as _time
+
+    from shift_cli.executor import is_dangerous
 
     commands = writer_json.get("final_commands", [])
     results = []
@@ -440,7 +440,7 @@ async def _execute_step_by_step(
         # Check for directory changes
         cmd_stripped = cmd.strip()
         cmd_parts = cmd_stripped.split(None, 1)
-        
+
         is_cd = False
         is_pushd = False
         is_popd = False
@@ -466,8 +466,8 @@ async def _execute_step_by_step(
         proposed_stack = list(cwd_stack)
 
         if is_cd or is_pushd or is_popd:
-            from pathlib import Path
             import os
+            from pathlib import Path
             base_path = Path(current_cwd) if current_cwd else Path.cwd()
 
             if is_cd:
@@ -496,7 +496,7 @@ async def _execute_step_by_step(
         go = _ask("  Run this?  [y/N/skip]  >")
         if go.lower() in ("y", "yes"):
             start = _time.time()
-            
+
             # Determine shell
             use_shell = True
             shell_args = cmd
@@ -654,9 +654,9 @@ async def execute_task(
     _dim("Planner → Researcher → Writer")
     _blank()
 
-    from autopilot.agents.pipeline import AutoPilotPipeline
+    from shift_cli.agents.pipeline import ShiftCLIPipeline
 
-    pipeline = AutoPilotPipeline(cfg)
+    pipeline = ShiftCLIPipeline(cfg)
 
     with console.status(
         f"  [{C_DIM}]Agent pipeline running...[/]",
@@ -820,16 +820,16 @@ async def interactive_mode(
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(
-        prog="autopilot",
-        description="AutoPilot — AI-Powered Terminal Automation Agent",
+        prog="shift_cli",
+        description="Shift_CLI — AI-Powered Terminal Automation Agent",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=(
             "Examples:\n"
-            "  autopilot                                    interactive session\n"
-            "  autopilot -t 'set up a Python project'       single task\n"
-            "  autopilot setup                              configure endpoint\n"
-            "  autopilot history                            view past tasks\n"
-            "  autopilot --no-hitl -t 'your task'           skip questions\n"
+            "  shift_cli                                    interactive session\n"
+            "  shift_cli -t 'set up a Python project'       single task\n"
+            "  shift_cli setup                              configure endpoint\n"
+            "  shift_cli history                            view past tasks\n"
+            "  shift_cli --no-hitl -t 'your task'           skip questions\n"
         ),
     )
     p.add_argument("command", nargs="?", help="Command: setup, history")
@@ -861,11 +861,11 @@ async def async_main() -> None:
     # ── First-run: must configure endpoint ────────────────────────────────────
     if not cfg.is_configured():
         _banner()
-        _p(f"[{C_LABEL}]AutoPilot is not configured yet.[/]")
+        _p(f"[{C_LABEL}]Shift_CLI is not configured yet.[/]")
         _blank()
         await run_setup(cfg)
         if not cfg.is_configured():
-            _err("Setup incomplete. Run 'autopilot setup' to configure.")
+            _err("Setup incomplete. Run 'shift_cli setup' to configure.")
             return
 
     # ── Single-task mode ──────────────────────────────────────────────────────
@@ -884,7 +884,7 @@ async def async_main() -> None:
 
 
 def main() -> None:
-    """CLI entry point called by `autopilot` command."""
+    """CLI entry point called by `shift_cli` command."""
     asyncio.run(async_main())
 
 

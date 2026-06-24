@@ -1,5 +1,5 @@
 """
-autopilot/hitl/questioner.py — Clarifying question generator
+shift_cli/hitl/questioner.py — Clarifying question generator
 =============================================================
 
 Generates targeted clarifying questions before executing a task.
@@ -13,7 +13,7 @@ import re
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from autopilot.config import Config
+    from shift_cli.config import Config
 
 
 async def generate_questions(
@@ -30,7 +30,7 @@ async def generate_questions(
     Uses the Foundry endpoint. Falls back to defaults if the call fails.
     """
     if not cfg:
-        from autopilot.config import Config
+        from shift_cli.config import Config
         cfg = Config()
 
     try:
@@ -47,7 +47,7 @@ async def _llm_questions(
     cwd_context: str,
     cfg: Config,
 ) -> list[str]:
-    from autopilot.agents.prompts import HITL_SYSTEM, format_prompt
+    from shift_cli.agents.prompts import HITL_SYSTEM, format_prompt
 
     system = format_prompt(
         HITL_SYSTEM,
@@ -68,8 +68,8 @@ async def _llm_questions(
     loop = asyncio.get_running_loop()
 
     def _call() -> str:
-        from azure.identity import DefaultAzureCredential
         from azure.ai.projects import AIProjectClient
+        from azure.identity import DefaultAzureCredential
 
         client = AIProjectClient(
             endpoint=cfg.endpoint,

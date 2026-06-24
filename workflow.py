@@ -17,7 +17,7 @@ project_client = AIProjectClient(
 with project_client:
 
     workflow = {
-        "name": "autopilot",
+        "name": "shift_cli",
         "version": "1",
     }
     
@@ -29,7 +29,7 @@ with project_client:
     stream = openai_client.responses.create(
         conversation=conversation.id,
         extra_body={"agent_reference": {"name": workflow["name"], "type": "agent_reference"}},
-        input="Hi autopilot",
+        input="Hi shift_cli",
         stream=True,
         metadata={"x-ms-debug-mode-enabled": "1"},
     )

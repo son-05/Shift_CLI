@@ -1,5 +1,5 @@
 """
-autopilot/agents/pipeline.py — 3-stage automation pipeline
+shift_cli/agents/pipeline.py — 3-stage automation pipeline
 ===========================================================
 
 Uses Azure AI Foundry's conversation API to run the multi-agent
@@ -16,14 +16,15 @@ import asyncio
 import json
 import re
 import time
-from typing import Any, Callable, Awaitable
+from collections.abc import Awaitable, Callable
+from typing import Any
 
-from autopilot.config import Config
+from shift_cli.config import Config
 
 
-class AutoPilotPipeline:
+class ShiftCLIPipeline:
     """
-    Runs the AutoPilot multi-agent workflow via Azure AI Foundry.
+    Runs the Shift_CLI multi-agent workflow via Azure AI Foundry.
 
     The Foundry workflow contains 3 agents (Planner, Researcher, Writer)
     that chain together to convert a natural language task into an
@@ -38,8 +39,8 @@ class AutoPilotPipeline:
     def _get_clients(self) -> tuple:
         """Initialize Azure AI Project client and OpenAI client."""
         if self._client is None:
-            from azure.identity import DefaultAzureCredential
             from azure.ai.projects import AIProjectClient
+            from azure.identity import DefaultAzureCredential
 
             self._client = AIProjectClient(
                 endpoint=self.config.endpoint,

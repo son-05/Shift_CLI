@@ -1,8 +1,8 @@
 """
-autopilot/memory/store.py — Persistent command history
+shift_cli/memory/store.py — Persistent command history
 ======================================================
 
-Stored at: ~/.autopilot/history.db
+Stored at: ~/.shift_cli/history.db
 
 Schema
 ------
@@ -12,21 +12,20 @@ Schema
 
 from __future__ import annotations
 
-import json
 import sqlite3
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 
-def _autopilot_home() -> Path:
-    home = Path.home() / ".autopilot"
+def _shift_cli_home() -> Path:
+    home = Path.home() / ".shift_cli"
     home.mkdir(parents=True, exist_ok=True)
     return home
 
 
 def _default_db() -> Path:
-    return _autopilot_home() / "history.db"
+    return _shift_cli_home() / "history.db"
 
 
 _DDL = """
@@ -59,7 +58,7 @@ CREATE TABLE IF NOT EXISTS command_log (
 
 class MemoryStore:
     """
-    Persistent command history for AutoPilot.
+    Persistent command history for Shift_CLI.
 
     Usage
     -----

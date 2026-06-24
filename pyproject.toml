@@ -1,11 +1,11 @@
-# AutoPilot — AI-Powered Terminal Automation CLI
-# PyPI package: pip install autopilot-cli
-# CLI command:  autopilot
+# Shift_CLI — AI-Powered Terminal Automation CLI
+# PyPI package: pip install shift-cli
+# CLI command:  shift_cli
 
 [project]
-name = "autopilot-cli"
+name = "shift-cli"
 version = "0.1.0"
-description = "AutoPilot — AI-Powered Terminal Automation Agent. Natural language to shell commands with a 3-agent pipeline (Planner → Researcher → Writer), risk-aware execution, and interactive CLI."
+description = "Shift_CLI — AI-Powered Terminal Automation Agent. Natural language to shell commands with a 3-agent pipeline (Planner → Researcher → Writer), risk-aware execution, and interactive CLI."
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
@@ -49,15 +49,15 @@ dev = [
 
 # CLI entry point
 [project.scripts]
-autopilot = "autopilot.cli:main"
+shift_cli = "shift_cli.cli:main"
 
 # Package discovery
 [tool.hatch.build.targets.wheel]
-packages = ["autopilot"]
+packages = ["shift_cli"]
 
 [tool.hatch.build.targets.sdist]
 include = [
-    "autopilot/**",
+    "shift_cli/**",
     "README.md",
     "pyproject.toml",
     ".env.example",

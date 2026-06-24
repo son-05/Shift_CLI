@@ -1,4 +1,4 @@
-# AutoPilot — Docker Usage
+# Shift_CLI — Docker Usage
 
 ## Prerequisites
 - Docker installed and running
@@ -12,7 +12,7 @@ AZURE_FOUNDRY_ENDPOINT=https://your-resource.services.ai.azure.com/api/projects/
 ## Build
 
 ```bash
-docker build -t autopilot-cli .
+docker build -t shift-cli .
 ```
 
 ## Run
@@ -21,36 +21,36 @@ docker build -t autopilot-cli .
 ```bash
 docker run -it \
   -v $(pwd)/.env:/app/.env \
-  -v ~/.autopilot:/root/.autopilot \
-  autopilot-cli
+  -v ~/.shift_cli:/root/.shift_cli \
+  shift-cli
 ```
 
 ### Single task
 ```bash
 docker run -it \
   -v $(pwd)/.env:/app/.env \
-  autopilot-cli -t "your task here"
+  shift-cli -t "your task here"
 ```
 
 ### Skip clarifying questions
 ```bash
 docker run -it \
   -v $(pwd)/.env:/app/.env \
-  autopilot-cli --no-hitl -t "your task here"
+  shift-cli --no-hitl -t "your task here"
 ```
 
 ### View history
 ```bash
 docker run -it \
-  -v ~/.autopilot:/root/.autopilot \
-  autopilot-cli history
+  -v ~/.shift_cli:/root/.shift_cli \
+  shift-cli history
 ```
 
 ### Reconfigure endpoint
 ```bash
 docker run -it \
-  -v ~/.autopilot:/root/.autopilot \
-  autopilot-cli setup
+  -v ~/.shift_cli:/root/.shift_cli \
+  shift-cli setup
 ```
 
 ## Volumes
@@ -58,4 +58,4 @@ docker run -it \
 | Volume | Purpose |
 |--------|---------|
 | `$(pwd)/.env:/app/.env` | Passes your Azure endpoint into the container |
-| `~/.autopilot:/root/.autopilot` | Persists config and task history between runs |
+| `~/.shift_cli:/root/.shift_cli` | Persists config and task history between runs |

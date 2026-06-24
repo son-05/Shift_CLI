@@ -1,12 +1,12 @@
-# AUTOPILOT: AI-Powered CLI Task Automation Agent
+# SHIFT_CLI: AI-Powered CLI Task Automation Agent
 
-AutoPilot is a production-grade, multi-agent terminal automation system built on **Microsoft Azure AI Foundry**. It is designed to assist software developers, system administrators, and DevOps engineers in executing complex or repetitive terminal tasks safely and efficiently by converting natural language queries into verified, risk-assessed shell commands.
+Shift_CLI is a production-grade, multi-agent terminal automation system built on **Microsoft Azure AI Foundry**. It is designed to assist software developers, system administrators, and DevOps engineers in executing complex or repetitive terminal tasks safely and efficiently by converting natural language queries into verified, risk-assessed shell commands.
 
 ---
 
 ## Technical Architecture Overview
 
-AutoPilot implements a sequential, context-accumulating multi-agent pipeline composed of three specialized reasoning agents. The system utilizes Microsoft Azure AI Foundry's model orchestration layer, stateful agent runtime, and Azure AI Search knowledge base grounding to deliver highly precise and secure terminal execution workflows.
+Shift_CLI implements a sequential, context-accumulating multi-agent pipeline composed of three specialized reasoning agents. The system utilizes Microsoft Azure AI Foundry's model orchestration layer, stateful agent runtime, and Azure AI Search knowledge base grounding to deliver highly precise and secure terminal execution workflows.
 
 ```mermaid
 graph TD
@@ -60,29 +60,29 @@ The workflow divides responsibilities among three specialized agents, each fine-
 
 Detailed design specs, execution logs, and guides are organized within the repository:
 
-*   **[Agent Prompts Reference](file:///c:/Users/RAJ/Desktop/AutoPilot/context.md)**: Breakdown of instructions, roles, and JSON schema structures for Planner, Researcher, and Writer agents.
-*   **[Problem Statement](file:///c:/Users/RAJ/Desktop/AutoPilot/problem_stmt.md)**: Hackathon specification, objectives, pain points, and target user demographics.
-*   **[Docker Configuration Guide](file:///c:/Users/RAJ/Desktop/AutoPilot/DOCKER.md)**: Container commands, volume mappings, and Docker execution instructions.
+*   **[Agent Prompts Reference](file:///c:/Users/RAJ/Desktop/Shift_CLI/context.md)**: Breakdown of instructions, roles, and JSON schema structures for Planner, Researcher, and Writer agents.
+*   **[Problem Statement](file:///c:/Users/RAJ/Desktop/Shift_CLI/problem_stmt.md)**: Hackathon specification, objectives, pain points, and target user demographics.
+*   **[Docker Configuration Guide](file:///c:/Users/RAJ/Desktop/Shift_CLI/DOCKER.md)**: Container commands, volume mappings, and Docker execution instructions.
 
 ---
 
 ## Repository Structure
 
 ```text
-AutoPilot/
+Shift_CLI/
 ├── .dockerignore               # Docker build ignore exclusions
 ├── Dockerfile                  # Production container definition
 ├── DOCKER.md                   # Docker usage and configuration guide
 ├── README.md                   # System documentation & quickstart
 ├── pyproject.toml              # PyPI package and dependency configuration
-├── run_autopilot.py            # Local development execution entrypoint
+├── run_shift_cli.py            # Local development execution entrypoint
 │
 ├── .github/                    # CI/CD Workflows
 │   └── workflows/
 │       ├── ci.yml              # Python lint and test workflow
 │       └── docker.yml          # Container image build & push workflow
 │
-├── autopilot/                  # Core Python package
+├── shift_cli/                  # Core Python package
 │   ├── cli.py                  # Interactive REPL CLI & Rich UI
 │   ├── config.py               # OS/Shell detection and Foundry config
 │   ├── executor.py             # Command safety verification & run engine
@@ -108,12 +108,12 @@ AutoPilot/
 
 ### Local Developer Installation
 
-AutoPilot can be installed in editable developer mode to modify source files:
+Shift_CLI can be installed in editable developer mode to modify source files:
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/AutoPilot.git
-cd AutoPilot
+git clone https://github.com/your-username/Shift_CLI.git
+cd Shift_CLI
 
 # Create and activate a virtual environment
 python -m venv .venv
@@ -127,26 +127,26 @@ pip install -e ".[dev]"
 
 ```bash
 # Launch the interactive terminal shell (REPL)
-autopilot
+shift_cli
 
 # Execute a query directly and run the pipeline
-autopilot -t "set up a new Python project with a virtual environment"
+shift_cli -t "set up a new Python project with a virtual environment"
 
 # Bypass clarifying questions
-autopilot --no-hitl -t "create a folder named test_dir"
+shift_cli --no-hitl -t "create a folder named test_dir"
 
 # Reconfigure Azure AI Foundry endpoints
-autopilot setup
+shift_cli setup
 
 # View past tasks execution history
-autopilot history
+shift_cli history
 ```
 
 ### Checking Configuration & Memory
 
-AutoPilot stores configurations locally in your home directory:
-- **Configuration Path**: `~/.autopilot/config.json`
-- **History Database Path**: `~/.autopilot/history.db`
+Shift_CLI stores configurations locally in your home directory:
+- **Configuration Path**: `~/.shift_cli/config.json`
+- **History Database Path**: `~/.shift_cli/history.db`
 
 You can view details or configure settings directly through the CLI tool:
 - Type **`history`** inside the interactive shell to review the customized profile and command logs.
@@ -157,7 +157,7 @@ You can view details or configure settings directly through the CLI tool:
 
 ## System Verification & Proof of Concept
 
-This section showcases the system validation runs, visual workflow layouts, and safety guardrails of the AutoPilot agent.
+This section showcases the system validation runs, visual workflow layouts, and safety guardrails of the Shift_CLI agent.
 
 ### 1. System Architecture
 ![System Architecture](proofs/ARCH.excalidraw.png)
@@ -173,7 +173,7 @@ This section showcases the system validation runs, visual workflow layouts, and 
 
 ### 4. Input & Output Guardrails
 ![Safety Guardrails](proofs/guardrils.png)
-*Demonstrates AutoPilot's safety engine dynamically categorizing command risks (Safe, Moderate, Dangerous) and blocking destructive CLI commands by default.*
+*Demonstrates Shift_CLI's safety engine dynamically categorizing command risks (Safe, Moderate, Dangerous) and blocking destructive CLI commands by default.*
 
 ---
 

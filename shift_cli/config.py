@@ -1,8 +1,8 @@
 """
-autopilot/config.py — Configuration manager for AutoPilot
+shift_cli/config.py — Configuration manager for Shift_CLI
 =========================================================
 
-Manages ~/.autopilot/config.json
+Manages ~/.shift_cli/config.json
 
 Primary provider: Azure AI Foundry
 The Foundry endpoint hosts the 3-agent workflow (Planner → Researcher → Writer)
@@ -16,9 +16,8 @@ import platform
 from pathlib import Path
 from typing import Any
 
-
-AUTOPILOT_HOME = Path.home() / ".autopilot"
-CONFIG_FILE = AUTOPILOT_HOME / "config.json"
+SHIFT_CLI_HOME = Path.home() / ".shift_cli"
+CONFIG_FILE = SHIFT_CLI_HOME / "config.json"
 
 
 def detect_os() -> str:
@@ -45,10 +44,10 @@ def detect_shell() -> str:
 
 class Config:
     """
-    Configuration wrapper for AutoPilot.
+    Configuration wrapper for Shift_CLI.
 
     Stores Azure AI Foundry endpoint, OS info, and preferences
-    in ~/.autopilot/config.json.
+    in ~/.shift_cli/config.json.
 
     Usage
     -----
@@ -60,7 +59,7 @@ class Config:
     """
 
     def __init__(self) -> None:
-        AUTOPILOT_HOME.mkdir(parents=True, exist_ok=True)
+        SHIFT_CLI_HOME.mkdir(parents=True, exist_ok=True)
         self._data: dict[str, Any] = {}
         self._load()
 
@@ -97,8 +96,8 @@ class Config:
 
     @property
     def workflow_name(self) -> str:
-        """Name of the Foundry workflow (default: autopilot)."""
-        return self._data.get("workflow_name", "autopilot")
+        """Name of the Foundry workflow (default: shift_cli)."""
+        return self._data.get("workflow_name", "shift_cli")
 
     @property
     def workflow_version(self) -> str:

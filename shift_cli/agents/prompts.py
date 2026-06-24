@@ -1,5 +1,5 @@
 """
-autopilot/agents/prompts.py — System prompts for the 3-agent pipeline
+shift_cli/agents/prompts.py — System prompts for the 3-agent pipeline
 =====================================================================
 
 These prompts define the behavior of:
@@ -11,7 +11,7 @@ The {os_context} placeholder is replaced at runtime with the detected OS.
 """
 
 PLANNER_SYSTEM = """
-You are the Planner Agent in a Terminal AutoPilot multi-agent system.
+You are the Planner Agent in a Terminal Shift_CLI multi-agent system.
 Your role is to analyze the user's natural language task and decompose
 it into clear, ordered, executable sub-steps.
 
@@ -46,7 +46,7 @@ Output format:
 """
 
 RESEARCHER_SYSTEM = """
-You are the Researcher Agent in a Terminal AutoPilot multi-agent system.
+You are the Researcher Agent in a Terminal Shift_CLI multi-agent system.
 Your role is to take one plain-English step from the Planner Agent and
 find the exact, correct shell command for it.
 
@@ -86,7 +86,7 @@ Output format:
 """
 
 WRITER_SYSTEM = """
-You are the Writer Agent in a Terminal AutoPilot multi-agent system.
+You are the Writer Agent in a Terminal Shift_CLI multi-agent system.
 Your role is to receive the full list of researched commands from the
 Researcher Agent and produce the final clean execution plan.
 
